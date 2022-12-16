@@ -30,6 +30,23 @@ about Elasticsearch, full text-search, and Openverse's index configuration:
   catalogued in Openverse.
 - "Field": The individual queryable elements of a document. In the context of
   Openverse, these may be textual, numerical, or keywords.
+- "Result relevance": An individual result is "relevant" to a search when it
+  matches the expectations of the user for a given query. A result is irrelevant
+  if it does not match the expectations of the user for that same query. For
+  example, the query "bird watch" may produce pictures of a wrist watch with a
+  bird clockface illustration _or_ could surface pictures related to the
+  activity also known as "birding" (bird watching), due to stemming. In the case
+  of this specific query, "bird watching" may not be relevant, despite being a
+  technically correct match for the query given Openverse's current index
+  configuration. Other relevancy issues may be caused by descriptions that are
+  not related to the contents of an image. This often happens on Flickr where
+  users sometimes include blog-like text in the description of an image that
+  references things that happened outside of the context of the image itself.
+- "Result quality": A combination of relevance and other factors like the actual
+  perceived "quality" of a given work. A work may be directly relevant to a
+  particular query but be of low quality. Quality is subjective, though there
+  may be certain characteristics that are broadly applicable to some subset of
+  searches.
 
 ## Technology
 
@@ -185,3 +202,25 @@ allows you to apply separate queries for individual fields (hence the name
 "individual field querying"). The other notable difference from general querying
 is that the "description" field of the document is not available for individual
 field querying.
+
+## Document scoring
+
+Aside from the aforementioned weighting of document "title" matches, Openverse
+also includes one other attempt at scoring documents to improve search relevancy
+and quality. Future improvements to Openverse's search relevancy will most
+likely involve changes to how we score documents. For example, we may score
+documents higher if they are determined to be popular results in Openverse
+itself.
+
+### Provider supplied popularity
+
+Some providers supply a "popularity" rating for individual works. We ingest this
+data and calculate a normalised "popularity" score named `rank_feature`. Flickr
+is one of the providers that supplies this information. This data is used so
+that works that are popular on the provider side, are ranked higher in Openverse
+as well. The assumption here is that works that are popular on the provider's
+own website are likely higher quality and therefore more desirable results.
+Whether this has a significant impact on result relevancy or quality has not
+been measured, in part due to loose definitions of "relevancy" and "quality" and
+in part because we do not currently have tools for measuring user perception of
+a results relevancy or quality.
